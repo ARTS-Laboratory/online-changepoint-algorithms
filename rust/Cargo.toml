@@ -1,0 +1,28 @@
+[package]
+name = "change_point_algorithms"
+version = "0.1.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "_change_point_algorithms"
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+pyo3 = { version = "0.24.1", features = ["extension-module"] }
+statrs = "0.18.0"
+itertools = "0.10.5"
+ndarray = "0.16.1"
+num-traits = "0.2.19"
+rand = "0.9.0"
+rand_distr = "0.5.1"
+
+[dev-dependencies]
+criterion = "0.5.1"
+rand = "0.9.0"
+rand_distr = "0.5.1"
+
+[[bench]]
+name = "benchmark_bocpd"
+harness = false
+
