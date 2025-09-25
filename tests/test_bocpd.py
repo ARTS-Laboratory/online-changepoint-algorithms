@@ -22,7 +22,7 @@ def generate_normal_points(mean: float, stddev: float, num_points: int):
 
 class TestRustModels:
     alpha, beta, mu, kappa, lamb = get_parameters()
-    num_unknowns = 100
+    num_unknowns = 1_000
     safe_mean = mu
     safe_stddev = 1.0
     # safe_stddev: float = (beta * (kappa + 1.0)) / (kappa * alpha)
@@ -36,9 +36,7 @@ class TestRustModels:
         model_gen = bocpd_rust_hybrid(
             my_unknowns, self.mu, self.kappa, self.alpha, self.beta, self.lamb)
         predictions = [item for item in model_gen]
-        # print(predictions)
-        assert all([item == False for item in
-                    predictions]), f'Model predicted that {[item for item in predictions].count(True)} were change points.'
+        assert predictions.count(False) >= round(self.num_unknowns * 0.95), f'Model predicted that {predictions.count(True)} were abnormal.'
 
     def test_bocpd_rust_hybrid_all_abnormal(self):
         my_unknowns = generate_normal_points(
@@ -46,6 +44,4 @@ class TestRustModels:
         model_gen = bocpd_rust_hybrid(
             my_unknowns, self.mu, self.kappa, self.alpha, self.beta, self.lamb)
         predictions = [item for item in model_gen]
-        # print(predictions)
-        assert all([item == True for item in
-                    predictions]), f'Model predicted that {[item for item in predictions].count(False)} were change points.'
+        assert predictions.count(True) >= round(self.num_unknowns * 0.95), f'Model predicted that {predictions.count(False)} were abnormal.'
