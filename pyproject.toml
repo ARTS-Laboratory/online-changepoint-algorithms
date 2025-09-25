@@ -24,7 +24,6 @@ dynamic = ["version"]
 readme = "README.md"
 
 dependencies = [
-    "maturin",
     "numba", # speeding up some python functions
     "numpy"
 ]
