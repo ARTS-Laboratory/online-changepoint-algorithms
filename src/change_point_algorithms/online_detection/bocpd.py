@@ -1,4 +1,5 @@
 import math
+import warnings
 from collections import deque
 from collections.abc import Iterable
 
@@ -50,7 +51,6 @@ def bocpd_rust_hybrid(
     for idx, event in enumerate(my_data):
         model.update(event, lamb)
         probability: float = model.predict(event)
-        print(f'Probability: {probability}')
         is_attack = probability <= prob_threshold
         yield is_attack
 
@@ -205,7 +205,7 @@ def get_bocpd_from_generator(
             shocks, non_shocks = detection_to_intervals_for_generator_v1(
                 time, begin, bocpd_model_gen)
     except NameError:
-        print('Exception occurred, reverting to python')
+        warnings.warn('Exception occurred, reverting to python')
         bocpd_model_gen = bocpd_generator(
                 data, mu, kappa, alpha, beta, lamb)
         if with_progress:
