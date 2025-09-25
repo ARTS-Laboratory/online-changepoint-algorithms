@@ -13,7 +13,7 @@ addopts = [
 ]
 
 [project]
-name = "change_point_algorithms"
+name = "online-changepoint-algorithms"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Rust",
@@ -22,6 +22,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 readme = "README.md"
+keywords = ["changepoint", "detection", "online detection"]
 
 dependencies = [
     "numba", # speeding up some python functions
@@ -29,7 +30,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-testing = [
+progress = ["tqdm"]
+test = [
     "pytest",
     "pytest-benchmark"
 ]
