@@ -1,4 +1,5 @@
 import math
+from collections.abc import Iterator
 from typing import Iterable
 
 import numpy as np
@@ -12,8 +13,8 @@ from change_point_algorithms.online_detection.model_helpers import (
 
 
 def expectation_maximization_generator(
-        safe, not_safe, unknowns: Iterable[float], mean_1, mean_2, var_1,
-        var_2, pi, epochs=1):
+        safe: np.ndarray, not_safe: np.ndarray, unknowns: Iterable[float], mean_1, mean_2, var_1,
+        var_2, pi, epochs=1) -> Iterator[bool]:
     """ Perform expectation maximization on one unknown.
 
         :param safe: Data that is known to be safe.
@@ -60,14 +61,14 @@ def expectation_maximization_generator(
 
 
 @njit
-def close_enough(a, b):
+def close_enough(a: np.ndarray, b: np.ndarray):
     return np.allclose(a, b) and np.allclose(b, a)
 
 
 @njit
 def maximization(
         data, attack_prob, inverse, mu1_hat, mu2_hat, sig1_hat, sig2_hat,
-        pi_hat, size):
+        pi_hat: float, size: int):
     """ Return updated parameter values for two normal distributions.
     """
     density, inverse_density = attack_prob.sum(), inverse.sum()
@@ -172,7 +173,7 @@ def posterior_probs_v2_inplace(points, attack_prob, attack_mean, attack_var, nor
 
 
 @njit
-def update_means(probs: np.typing.ArrayLike, inverse: np.typing.ArrayLike, density: float, inverse_density: float, events: np.typing.ArrayLike | list[float]) -> (float, float):
+def update_means(probs: np.typing.ArrayLike, inverse: np.typing.ArrayLike, density: float, inverse_density: float, events: np.typing.ArrayLike | list[float]) -> tuple[float, float]:
     """ Return updated values for means.
 
         :param probs: List of probabilities of attack.
@@ -187,7 +188,7 @@ def update_means(probs: np.typing.ArrayLike, inverse: np.typing.ArrayLike, densi
 
 
 @njit
-def variance_helper(probs: np.ndarray, events: np.ndarray, mean: float):
+def variance_helper(probs: np.ndarray, events: np.ndarray, mean: float) -> float:
     """ """
     return np.dot(probs, np.square(events - mean))
 

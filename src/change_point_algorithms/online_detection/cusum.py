@@ -4,6 +4,7 @@ Created on Thu Dec 21 12:24:29 2023
 
 @author: localuser
 """
+from collections.abc import Iterable, Iterator
 from enum import Enum
 
 from change_point_algorithms import _change_point_algorithms
@@ -120,7 +121,7 @@ def cusum_alg_generator(data, mean, std_dev, h, alpha):
             cp[idx], cn[idx] = 0, 0
         yield attack_likely
 
-def cusum_alg_v0_rust_hybrid(data, mean: float, std_dev: float, h: float, alpha: float):
+def cusum_alg_v0_rust_hybrid(data: Iterable[float], mean: float, std_dev: float, h: float, alpha: float) -> Iterator[bool]:
     """ """
     prob_threshold = h * std_dev
     model = _change_point_algorithms.CusumV0(mean, std_dev**2, alpha, h)

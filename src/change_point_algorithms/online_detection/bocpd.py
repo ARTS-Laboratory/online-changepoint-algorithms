@@ -117,13 +117,13 @@ def update_no_attack_arr(
 
 
 @njit
-def calculate_prior_arr(point, alphas, betas, mus, kappas):
+def calculate_prior_arr(point: float, alphas, betas, mus, kappas):
     """ Return student's T distribution PDF given parameters of inverse gamma distribution."""
     return t_func_arr(point, mus, ((betas * (kappas + 1.0)) / (alphas * kappas)), 2 * alphas)
 
 
 @njit
-def calculate_prior_arr_v1(point, alphas, betas, mus, kappas):
+def calculate_prior_arr_v1(point: float, alphas, betas, mus, kappas):
     """ Return student's T distribution PDF for given parameters of inverse gamma distribution."""
     t_values = calculate_prior_helper(point, alphas, betas, mus, kappas)
     t_values /= beta_numba(0.5, alphas)
