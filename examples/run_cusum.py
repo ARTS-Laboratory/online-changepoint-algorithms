@@ -16,7 +16,7 @@ def rusty_cusum_for_sequence(arr, mean: float, std_dev: float, h: float, alpha: 
     for decision in model_generator:
         print(f"Observation is {'normal' if (not decision) else 'abnormal'}")
 
-def make_us_cusum_model(arr: Iterable, mean: float, std_dev: float, alpha: float, threshold=3):
+def make_use_cusum_model(arr: Iterable, mean: float, std_dev: float, alpha: float, threshold=3):
     """ Make CUSUM model and run on array."""
     decision_cutoff = threshold * std_dev
     model = CusumV0(mean, std_dev**2, alpha, threshold)
