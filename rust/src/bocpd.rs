@@ -15,6 +15,17 @@ pub struct NormalInverseGamma {
     pub kappa: f64,
 }
 
+impl Default for NormalInverseGamma {
+    fn default() -> Self {
+        Self {
+            alpha: 1.0,
+            beta: 1.0,
+            mu: 0.0,
+            kappa: 1.0,
+        }
+    }
+}
+
 pub fn bocpd<T: element::Element>(
     data: impl IntoIterator<Item = T> + ExactSizeIterator,
     mu: f64,

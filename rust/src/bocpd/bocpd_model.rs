@@ -20,6 +20,29 @@ pub struct BocpdModel {
     beta_cache: Option<BetaCache>,
 }
 
+impl Default for BocpdModel {
+    fn default() -> Self {
+        let initial_params = NormalInverseGamma::default();
+        let threshold = DEFAULT_THRESHOLD;
+        let prev_max = 0;
+        let curr_max = 0;
+        let mut probs = SparseProbs::new_py();
+        probs.new_entry(0, 1.0).expect("0 run length and prob of 1.0 should work.");
+        let cache = Some(BetaCache::new_py(BETA_FIXED));
+        let NormalInverseGamma{alpha, beta, mu, kappa} = initial_params;
+        let params: DistParams = DistParams::new_py(alpha, beta, mu, kappa).expect("Using defaults for NormalInverseGamma should work.");
+        Self {
+            initial_params,
+            threshold,
+            prev_max,
+            curr_max,
+            probs,
+            params,
+            beta_cache: cache,
+        }
+    }
+}
+
 #[pymethods]
 impl BocpdModel {
     #[new]
