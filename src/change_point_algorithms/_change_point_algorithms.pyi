@@ -1,16 +1,18 @@
+from collections.abc import Sequence
 from typing import Optional
 
 from change_point_algorithms import EmLikelihoodCheck
 
-type NormalTuple = (float, float, float)
+type NormalTuple = tuple[float, float, float]
 
-def build_em_early_stop_model(normal: NormalTuple, abnormals: [NormalTuple], arr_sizes: list[int], epochs: int) -> EmLikelihoodCheck:
-    """ 
-    :param normal: 
-    :param abnormals: 
-    :param arr_sizes: 
-    :param epochs: 
-    :return: 
+def build_em_early_stop_model(normal: NormalTuple, abnormals: Sequence[NormalTuple], arr_sizes: list[int], epochs: int) -> EmLikelihoodCheck:
+    """ Return an Expectation Maximization model with early stopping for parameter updates.
+    :param normal: A 3-tuple of (mean, standard deviation, probability of occurrence)
+    :param abnormals: List of 3-tuples (mean, standard deviation, probability of occurrence)
+    :param arr_sizes: List representing the number of samples for each distribution.
+     The first size is for the normal parameter distribution. The remaining correspond to the abnormal case(s).
+    :param epochs: The maximum number of iterations to perform for each parameter update.
+    :return: Expectation Maximization model with early stopping. The model update stops early when the change in likelihoods is negligible.
     """
 
 class BocpdModel:
