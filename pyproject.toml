@@ -35,3 +35,8 @@ test = [
     "pytest",
     "pytest-benchmark"
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
