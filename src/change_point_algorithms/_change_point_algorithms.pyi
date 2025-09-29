@@ -35,7 +35,7 @@ class BocpdModel:
         :return:
         """
 
-    def predict(self, point: float):
+    def predict(self, point: float) -> float:
         """
         :param point: Latest observation.
         :return: Prediction of model. Weighted sum of likelihoods of observing given point.
