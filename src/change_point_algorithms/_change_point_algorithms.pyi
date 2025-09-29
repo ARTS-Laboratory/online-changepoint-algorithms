@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Optional
 
-from change_point_algorithms import EmLikelihoodCheck
+from change_point_algorithms import EmLikelihoodCheck, EmModel
 
 type NormalTuple = tuple[float, float, float]
 
@@ -14,6 +14,39 @@ def build_em_early_stop_model(normal: NormalTuple, abnormals: Sequence[NormalTup
     :param epochs: The maximum number of iterations to perform for each parameter update.
     :return: Expectation Maximization model with early stopping. The model update stops early when the change in likelihoods is negligible.
     """
+
+def build_em_model(normal: NormalTuple, abnormals: Sequence[NormalTuple], arr_sizes: list[int], epochs: int) -> EmModel:
+    """ Return an Expectation Maximization model.
+
+    :param normal: A 3-tuple of (mean, standard deviation, probability of occurrence)
+    :param abnormals: List of 3-tuples (mean, standard deviation, probability of occurrence)
+    :param arr_sizes: List representing the number of samples for each distribution.
+     The first size is for the normal parameter distribution. The remaining correspond to the abnormal case(s).
+    :param epochs: The maximum number of iterations to perform for each parameter update.
+    :return: Expectation Maximization model.
+    """
+
+class EmLikelihoodCheck:
+    """ A class implementing Expectation Maximization with early stopping.
+    """
+    def update_check_convergence(self, point: float, early_stop_threshold: float):
+        """ Update model parameters using given point with early stopping when likelihood is below threshold.
+        """
+
+    def predict(self, point: float) -> float:
+        """ Return prediction for given point.
+        """
+
+class EmModel:
+    """ A class implementing Expectation Maximization.
+    """
+    def update(self, point: float):
+        """ Update model parameters using given point.
+        """
+
+    def predict(self, point: float) -> float:
+        """ Return prediction for given point.
+        """
 
 class BocpdModel:
     """ A class implementing Bayesian Online Change Point Detection.
