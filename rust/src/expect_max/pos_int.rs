@@ -85,3 +85,26 @@ impl PositiveInteger2 {
         // }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_positive_integer_default() {
+        let mut x = PositiveInteger::default();
+        assert_eq!(x.value(), 1);
+    }
+
+    #[test]
+    fn test_positive_integer_new() {
+        let x = PositiveInteger::new(10).unwrap();
+        assert_eq!(x.value(), 10);
+    }
+
+    #[test]
+    fn test_positive_integer_new_fail() {
+        let x = PositiveInteger::new(0);
+        assert!(x.is_err());
+    }
+}
