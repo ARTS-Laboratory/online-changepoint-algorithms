@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_positive_integer_default() {
-        let mut x = PositiveInteger::default();
+        let x = PositiveInteger::default();
         assert_eq!(x.value(), 1);
     }
 
