@@ -1,9 +1,9 @@
 from collections.abc import Sequence
-from typing import Optional
+from typing import TypeAlias
 
 from change_point_algorithms import EmLikelihoodCheck, EmModel
 
-type NormalTuple = tuple[float, float, float]
+NormalTuple: TypeAlias = tuple[float, float, float]
 
 def build_em_early_stop_model(normal: NormalTuple, abnormals: Sequence[NormalTuple], arr_sizes: list[int], epochs: int) -> EmLikelihoodCheck:
     """ Return an Expectation Maximization model with early stopping for parameter updates.
@@ -51,7 +51,7 @@ class EmModel:
 class BocpdModel:
     """ A class implementing Bayesian Online Change Point Detection.
     """
-    def __init__(self, alpha: float, beta: float, mu: float, kappa: float, with_cache: bool, threshold: Optional[float]):
+    def __init__(self, alpha: float, beta: float, mu: float, kappa: float, with_cache: bool, threshold: float | None):
         """
         :param alpha:
         :param beta:
