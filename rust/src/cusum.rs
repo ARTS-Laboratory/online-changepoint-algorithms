@@ -214,7 +214,7 @@ mod tests {
         let variance = 1.0;
         let alpha = 0.5;
         let threshold = 5.0;
-        let model = CusumV0::new(mean, variance, alpha, threshold);
+        let _model = CusumV0::new(mean, variance, alpha, threshold);
     }
 
     fn make_cusum_v0() -> CusumV0 {
@@ -227,6 +227,7 @@ mod tests {
     #[test]
     fn test_cusum_v0_normal_point() {
         let mut model = make_cusum_v0();
+        let variance = 1.0;
         let normal_point = 0.01;
         for _idx in 0..5 {
             model.update(normal_point);
@@ -234,12 +235,13 @@ mod tests {
         }
         model.update(normal_point);
         let prob = model.predict(normal_point);
-        assert!(prob < model.variance * model.threshold);
+        assert!(prob < variance * model.threshold);
     }
 
     #[test]
     fn test_cusum_v0_abnormal_point() {
         let mut model = make_cusum_v0();
+        let variance = 1.0;
         let abnormal_point = 20.0;
         for _idx in 0..5 {
             model.update(abnormal_point);
@@ -251,7 +253,7 @@ mod tests {
         model.update(abnormal_point);
         let prob = model.predict(abnormal_point);
         dbg!(prob);
-        assert!(prob > model.variance * model.threshold);
+        assert!(prob > variance * model.threshold);
     }
 
     // Test CusumV1
@@ -289,7 +291,7 @@ mod tests {
     fn test_cusum_v1_abnormal_point() {
         let mut model = make_cusum_v1();
         let abnormal_point = 20.0;
-        for idx in 0..5 {
+        for _ in 0..5 {
             model.update(abnormal_point);
             model.predict(abnormal_point);
         }
