@@ -86,7 +86,7 @@ pub struct CusumV1 {
 #[pymethods]
 impl CusumV1 {
     #[new]
-    pub fn new(mean: f64, std_dev: f64, h: f64, alpha: f64) -> Self {
+    pub fn new(mean: f64, std_dev: f64, alpha: f64, h: f64) -> Self {
         let cp = LastTwo::new(0.0, 0.0);
         let cn = LastTwo::new(0.0, 0.0);
         // todo might need to change this to last value.
@@ -214,7 +214,7 @@ mod tests {
         let variance = 1.0;
         let alpha = 0.5;
         let threshold = 5.0;
-        let model = CusumV0::new(mean, variance, alpha, threshold);
+        let _model = CusumV0::new(mean, variance, alpha, threshold);
     }
 
     fn make_cusum_v0() -> CusumV0 {
@@ -227,6 +227,7 @@ mod tests {
     #[test]
     fn test_cusum_v0_normal_point() {
         let mut model = make_cusum_v0();
+        let variance = 1.0;
         let normal_point = 0.01;
         for _idx in 0..5 {
             model.update(normal_point);
@@ -234,12 +235,13 @@ mod tests {
         }
         model.update(normal_point);
         let prob = model.predict(normal_point);
-        assert!(prob < model.variance * model.threshold);
+        assert!(prob < variance * model.threshold);
     }
 
     #[test]
     fn test_cusum_v0_abnormal_point() {
         let mut model = make_cusum_v0();
+        let variance = 1.0;
         let abnormal_point = 20.0;
         for _idx in 0..5 {
             model.update(abnormal_point);
@@ -251,17 +253,24 @@ mod tests {
         model.update(abnormal_point);
         let prob = model.predict(abnormal_point);
         dbg!(prob);
-        assert!(prob > model.variance * model.threshold);
+        assert!(prob > variance * model.threshold);
+    }
+
+    fn floats_close(a: f64, b: f64, epsilon: f64) -> bool {
+        (a - b).abs() < epsilon
     }
 
     // Test CusumV1
     #[test]
     fn test_cusum_v1() {
         let mean = 0.0;
-        let variance = 1.0;
+        let std_dev = 2.0;
         let alpha = 0.5;
         let threshold = 5.0;
-        let model = CusumV1::new(mean, variance, alpha, threshold);
+        let model = CusumV1::new(mean, std_dev, alpha, threshold);
+        assert!(floats_close(model.mean, mean, 1e-10));
+        assert!(floats_close(model.variance, 4.0, 1e-10));
+        assert!(floats_close(model.threshold, 10.0, 1e-8));
     }
 
     fn make_cusum_v1() -> CusumV1 {
@@ -289,7 +298,7 @@ mod tests {
     fn test_cusum_v1_abnormal_point() {
         let mut model = make_cusum_v1();
         let abnormal_point = 20.0;
-        for idx in 0..5 {
+        for _ in 0..5 {
             model.update(abnormal_point);
             model.predict(abnormal_point);
         }

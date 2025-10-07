@@ -63,6 +63,36 @@ mod tests {
         let prob = Probability { probability: 0.5 };
         assert_eq!(prob.value(), 0.5);
     }
+    
+    #[test]
+    fn test_probability_new_success() {
+        let prob = Probability::new(0.5).unwrap();
+        assert_eq!(prob.value(), 0.5);
+    }
+    
+    #[test]
+    fn test_probability_new_failure_negative() {
+        let prob = Probability::new(-0.7);
+        assert!(prob.is_err());
+    }
+    
+    #[test]
+    fn test_probability_new_failure_over_one() {
+        let prob = Probability::new(1.1);
+        assert!(prob.is_err());
+    }
+    
+    #[test]
+    fn test_probability_new_failure_nan() {
+        let prob = Probability::new(f64::NAN);
+        assert!(prob.is_err());
+    }
+    
+    #[test]
+    fn test_probability_new_failure_inf() {
+        let prob = Probability::new(f64::INFINITY);
+        assert!(prob.is_err());
+    }
 
     #[test]
     fn test_probability_setter() {
