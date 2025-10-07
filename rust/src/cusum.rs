@@ -86,7 +86,7 @@ pub struct CusumV1 {
 #[pymethods]
 impl CusumV1 {
     #[new]
-    pub fn new(mean: f64, std_dev: f64, h: f64, alpha: f64) -> Self {
+    pub fn new(mean: f64, std_dev: f64, alpha: f64, h: f64) -> Self {
         let cp = LastTwo::new(0.0, 0.0);
         let cn = LastTwo::new(0.0, 0.0);
         // todo might need to change this to last value.
@@ -256,14 +256,21 @@ mod tests {
         assert!(prob > variance * model.threshold);
     }
 
+    fn floats_close(a: f64, b: f64, epsilon: f64) -> bool {
+        (a - b).abs() < epsilon
+    }
+
     // Test CusumV1
     #[test]
     fn test_cusum_v1() {
         let mean = 0.0;
-        let variance = 1.0;
+        let std_dev = 2.0;
         let alpha = 0.5;
         let threshold = 5.0;
-        let model = CusumV1::new(mean, variance, alpha, threshold);
+        let model = CusumV1::new(mean, std_dev, alpha, threshold);
+        assert!(floats_close(model.mean, mean, 1e-10));
+        assert!(floats_close(model.variance, 4.0, 1e-10));
+        assert!(floats_close(model.threshold, 10.0, 1e-8));
     }
 
     fn make_cusum_v1() -> CusumV1 {
