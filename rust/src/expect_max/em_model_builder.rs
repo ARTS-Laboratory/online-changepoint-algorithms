@@ -383,31 +383,30 @@ mod tests {
     // }
 
     #[test]
-    fn test_em_builder_build_normal() {
-        let mut em = EmBuilder::new();
+    fn test_em_builder_one_build_normal() {
+        let mut em = EmBuilderOne::new();
         let result = em.build_normal(-2.0, 10.0, 0.5);
         assert!(result.is_ok());
     }
 
     #[test]
-    fn test_em_builder_build_normal_fails() {
-        let mut em = EmBuilder::new();
-        let result = em.build_normal(-2.0, -10.0, 0.5);
+    fn test_em_builder_one_build_normal_fails_bad_mean() {
+        let mut em = EmBuilderOne::new();
+        let result = em.build_normal(f64::INFINITY, 2.0, 0.5);
         assert!(result.is_err());
     }
 
-    // #[test]
-    // fn test_em_builder_build_abnormal() {
-    //
-    // }
+    #[test]
+    fn test_em_builder_one_build_normal_fails_bad_std_dev() {
+        let mut em = EmBuilderOne::new();
+        let result = em.build_normal(0.0, -2.0, 0.5);
+        assert!(result.is_err());
+    }
 
     #[test]
-    fn test_em_builder_build_samples_from_slice() {
-        let mut em = EmBuilder::new();
-        em.build_samples_from_slice(&[-2.0, 1.0, 1.0]);
-        assert_eq!(
-            em.sample_arr,
-            Some(Array1::from_vec(vec![-2.0, 1.0, 1.0, 0.0]))
-        );
+    fn test_em_builder_one_build_normal_fails_bad_prob() {
+        let mut em = EmBuilderOne::new();
+        let result = em.build_normal(0.0, 2.0, 1.5);
+        assert!(result.is_err());
     }
 }
