@@ -337,16 +337,50 @@ impl EmBuilderLast<f64> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_em_builder_default_constructor() {
-        let _em = EmBuilder::new();
-        // assert!(em);
-        // let NormalParams {dist, prob} = em.normal.;
-        // assert_eq!(prob, 1.0);
-        // let Normal { mean, stddev } = dist;
-        // assert_eq!(mean, 0.0);
-        // assert_eq!(stddev, 1.0);
-    }
+    // #[test]
+    // fn test_em_builder_default_constructor() {
+    //     let _em = EmBuilder::new();
+    //     // assert!(em);
+    //     // let NormalParams {dist, prob} = em.normal.;
+    //     // assert_eq!(prob, 1.0);
+    //     // let Normal { mean, stddev } = dist;
+    //     // assert_eq!(mean, 0.0);
+    //     // assert_eq!(stddev, 1.0);
+    // }
+    //
+    // #[test]
+    // fn test_em_builder_build_normal() {
+    //     let mut em = EmBuilder::new();
+    //     let result = em.build_normal(-2.0, 10.0, 0.5);
+    //     assert!(result.is_ok());
+    // }
+    //
+    // #[test]
+    // fn test_em_builder_build_normal_fails() {
+    //     let mut em = EmBuilder::new();
+    //     let result = em.build_normal(-2.0, -10.0, 0.5);
+    //     assert!(result.is_err());
+    // }
+    //
+    // // #[test]
+    // // fn test_em_builder_build_abnormal() {
+    // //
+    // // }
+    //
+    // #[test]
+    // fn test_em_builder_build_samples_from_slice() {
+    //     let mut em = EmBuilder::new();
+    //     em.build_samples_from_slice(&[-2.0, 1.0, 1.0]);
+    //     assert_eq!(
+    //         em.sample_arr,
+    //         Some(Array1::from_vec(vec![-2.0, 1.0, 1.0, 0.0]))
+    //     );
+    // }
+
+    // #[test]
+    // fn test_em_builder_one_build_constructor() {
+    //     let em = EmBuilderOne::new();
+    // }
 
     #[test]
     fn test_em_builder_build_normal() {
