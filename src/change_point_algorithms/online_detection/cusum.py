@@ -93,14 +93,14 @@ def simple_cusum(
     return shocks, non_shocks
 
 
-def cusum_alg(
-        time, data, mean, std_dev, h, alpha, shock_intervals=None,
-        non_shock_intervals=None):
+def cusum_alg(data: Iterable, mean: float, std_dev: float, h: float, alpha: float):
     """ """
-    raise NotImplementedError()
+    model_gen = cusum_alg_generator(data, mean, std_dev, h, alpha)
+    out = [item for item in model_gen]
+    return out
 
 
-def cusum_alg_generator(data, mean, std_dev, h, alpha):
+def cusum_alg_generator(data: Iterable, mean: float, std_dev: float, h: float, alpha: float):
     """ """
     cp, cn, d, mu = [0], [0], [0], [data[0]]
     # First point is always True
@@ -131,15 +131,14 @@ def cusum_alg_v0_rust_hybrid(data: Iterable[float], mean: float, std_dev: float,
         is_attack = probability > prob_threshold
         yield is_attack
 
-def cusum_alg_v1(
-        time, data, mean, std_dev, h, alpha):
+def cusum_alg_v1(data: Iterable, mean: float, std_dev: float, h: float, alpha: float):
     """ Return an array of model predictions for each unknown."""
     model_gen = cusum_alg_v1_generator(data,mean, std_dev, h, alpha)
     out = [item for item in model_gen]
     return out
 
 
-def cusum_alg_v1_generator(data, mean, std_dev, h, alpha):
+def cusum_alg_v1_generator(data: Iterable, mean: float, std_dev: float, h: float, alpha: float) -> Iterator[bool]:
     """ """
     cp, cn, mu = [0], [0], [data[0]]
     # First point is always True
