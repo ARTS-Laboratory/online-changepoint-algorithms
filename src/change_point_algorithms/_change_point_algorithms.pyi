@@ -102,7 +102,7 @@ class CusumV0:
 class CusumV1:
     """ A class that implements a version of Cumulative Summation.
     """
-    def __init__(self, mean: float, std_dev: float, h: float, alpha: float):
+    def __init__(self, mean: float, std_dev: float, alpha: float, h: float):
         """
         :param mean:
         :param std_dev:
