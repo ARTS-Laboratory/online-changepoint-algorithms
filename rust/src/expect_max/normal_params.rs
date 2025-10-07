@@ -95,3 +95,59 @@ impl NormalParams {
         Ok(prob)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normal_params_new_success() {
+        let normal = Normal::new(0.0, 1.0).unwrap();
+        let params = NormalParams::new(normal, 0.5).unwrap();
+        assert_eq!(params.dist.mean(), 0.0);
+        assert_eq!(params.dist.stddev(), 1.0);
+        assert_eq!(params.prob.value(), 0.5);
+    }
+
+    #[test]
+    fn test_normal_params_new_success_negative_mean() {
+        let normal = Normal::new(-1.0, 1.0).unwrap();
+        let params = NormalParams::new(normal, 0.5);
+        assert!(params.is_ok());
+        let params = params.unwrap();
+        assert_eq!(params.dist.mean(), -1.0);
+        assert_eq!(params.dist.stddev(), 1.0);
+        assert_eq!(params.prob.value(), 0.5);
+    }
+
+    #[test]
+    fn test_normal_params_from_tuple_success() {
+        let params = NormalParams::from_tuple((0.0, 1.0, 0.5)).unwrap();
+        assert_eq!(params.dist.mean(), 0.0);
+        assert_eq!(params.dist.stddev(), 1.0);
+        assert_eq!(params.prob.value(), 0.5);
+    }
+
+    fn get_params() -> NormalParams {
+        NormalParams::from_tuple((0.0, 1.0, 0.5)).unwrap()
+    }
+
+    #[test]
+    fn test_update_params_success() {
+        let mut params = get_params();
+        params.update_params(2.0, 3.0, 0.7).unwrap();
+        assert_eq!(params.dist.mean(), 2.0);
+        assert_eq!(params.dist.stddev(), 3.0);
+        assert_eq!(params.prob.value(), 0.7);
+    }
+
+    #[test]
+    fn test_update_params_failure_all_bad() {
+        let mut params = get_params();
+        let res = params.update_params(f64::NAN, -2.0, 5.8);
+        assert!(res.is_err());
+        assert_eq!(params.dist.mean(), 0.0);
+        assert_eq!(params.dist.stddev(), 1.0);
+        assert_eq!(params.prob.value(), 0.5);
+    }
+}
