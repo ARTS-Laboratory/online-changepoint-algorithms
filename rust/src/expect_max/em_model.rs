@@ -12,20 +12,6 @@ pub enum EmModelError {
     ProbabilityError(f64),
 }
 
-// impl fmt::Display for EmModelError {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         match *self {
-//             EmModelError::PositiveError(x) => {}
-//         }
-//     }
-// }
-
-// impl From<PositiveError> for EmModelError {
-//     fn from(err: PositiveError) -> EmModelError {
-//         EmModelError::PositiveError(err)
-//     }
-// }
-
 #[pyclass]
 #[derive(Clone)]
 pub struct EmModel {
@@ -38,7 +24,6 @@ pub struct EmModel {
 
 #[pymethods]
 impl EmModel {
-    // #[new]
 
     pub fn update(&mut self, point: f64) -> Result<(), NormalParamsError> {
         self.swap_last_sample(point);
@@ -180,10 +165,3 @@ impl EmModel {
         densities / (size as f64)
     }
 }
-
-// fn dot_product<A, S, T>(a: &ArrayBase<S, Ix1>, b: &ArrayBase<T, Ix1>) -> A
-// where S: Data<Elem = A>,
-//     T: Data<Elem = A>,
-//     A: NdFloat {
-//     (a * b).sum()
-// }
