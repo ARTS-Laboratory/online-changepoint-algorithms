@@ -46,13 +46,13 @@ impl EmModel {
             .probs_inplace_arr(&sample_view, &mut normal_view);
         let mut abnormals = self.likelihoods.slice_mut(s![1.., ..]);
         let abnormals_view = abnormals.rows_mut();
-        for (mut likelihood, abnormal) in zip(abnormals_view, self.abnormals.iter()) {
+        for (mut likelihood, abnormal) in zip(abnormals_view, &self.abnormals) {
             abnormal.probs_inplace_arr(&sample_view, &mut likelihood);
         }
         // normalize
         let norms = self.likelihoods.sum_axis(Axis(0));
         let likelihood_view = self.likelihoods.columns_mut();
-        for (mut likelihood, &norm) in zip(likelihood_view, norms.iter()) {
+        for (mut likelihood, &norm) in zip(likelihood_view, &norms) {
             if norm != 0.0 {
                 likelihood /= norm;
             }
