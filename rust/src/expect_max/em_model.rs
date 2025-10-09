@@ -116,7 +116,6 @@ impl EmModel {
         let sample_size = samples.len();
         let num_params = abnormals.len() + 1;
         let likelihoods = Array2::<f64>::zeros((num_params, sample_size));
-        // let last_likelihoods = Array2::from(&likelihoods);
         Self {
             normal,
             abnormals,
