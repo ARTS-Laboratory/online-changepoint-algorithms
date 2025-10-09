@@ -224,7 +224,7 @@ mod tests {
         let samples = Array1::<f64>::zeros(0);
         let epochs = PositiveInteger::new(2).unwrap();
         let mut model = EmModel::new(normal, abnormals, samples, epochs);
-        let res = model.swap_last_sample(-14.0);
+        let _res = model.swap_last_sample(-14.0);
     }
 
     #[test]
