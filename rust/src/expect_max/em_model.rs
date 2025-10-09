@@ -142,6 +142,7 @@ impl EmModel {
         self.likelihoods.view()
     }
 
+    /// Return mean estimates for normal and abnormal distributions
     fn update_means(&self, densities: &Array1<f64>) -> Array1<f64> {
         let sample_view = self.samples.view();
         // let means = (self.likelihoods * densities).sum_axis(Axis(1));
@@ -152,6 +153,7 @@ impl EmModel {
         means
     }
 
+    /// Return variance value estimates for normal and abnormal distributions
     fn update_variances(&self, densities: &Array1<f64>, means: &Array1<f64>) -> Array1<f64> {
         let sample_view = self.samples.view();
         let means_view = means.view();
@@ -165,6 +167,7 @@ impl EmModel {
         variances
     }
 
+    /// Return an updated estimate of probabilities for normal and abnormal distributions
     fn update_weights(&self, densities: &Array1<f64>, size: usize) -> Array1<f64> {
         densities / (size as f64)
     }
