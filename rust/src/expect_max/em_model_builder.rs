@@ -7,7 +7,7 @@ use std::iter::zip;
 use pyo3::exceptions::PyValueError;
 use pyo3::PyErr;
 use super::em_model::EmModel;
-use super::normal::{InvalidFloatError, Normal};
+use super::normal::Normal;
 use super::pos_int::{PositiveError, PositiveInteger};
 
 // trait EmBuild {
