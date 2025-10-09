@@ -133,7 +133,14 @@ impl EmBuilderOne<f64> {
         Ok(self)
     }
 
-    pub fn build_epochs(&mut self, epochs: u32) -> Result<&mut Self, BuildError<Self>> {
+    /// Set the number of epochs to run.
+    ///
+    /// # Errors
+    ///
+    /// If failure occurs while trying to set errors to a given value,
+    /// then an error will happen. This is almost exclusively caused by epochs being 0.
+    // pub fn build_epochs(&mut self, epochs: u32) -> Result<&mut Self, BuildError<Box<Self>>> {
+    pub fn build_epochs(&mut self, epochs: u32) -> Result<&mut Self, BuildError<()>> {
         self.epochs.set(epochs)?;
         Ok(self)
     }
@@ -148,7 +155,13 @@ impl EmBuilderOne<f64> {
         self
     }
 
-    pub fn next_builder(&mut self) -> Result<EmBuilderTwo<f64>, BuildError<&mut Self>> {
+    /// Finish current builder changes and return the next builder.
+    ///
+    /// # Errors
+    ///
+    /// If sample_arr does not have FieldStatus Complete, then BuildError will be returned.
+    // pub fn next_builder(&mut self) -> Result<EmBuilderTwo<f64>, BuildError<&mut Self>> {
+    pub fn next_builder(&mut self) -> Result<EmBuilderTwo<f64>, BuildError<Box<&mut Self>>> {
         if let Complete(sample_arr) = &self.sample_arr {
             let abnormals = self.abnormals.clone();
             let sample_arr = sample_arr.clone();
@@ -176,6 +189,8 @@ pub struct EmBuilderTwo<T> {
 }
 
 impl<T: Clone + num_traits::identities::Zero + Send + Sync> EmBuilderTwo<T> {
+
+    /// Initialize array for likelihoods
     pub fn build_likelihoods(&mut self) -> &mut Self {
         let sample_size = self.sample_arr.len();
         let num_params = self.abnormals.len() + 1;
@@ -184,7 +199,13 @@ impl<T: Clone + num_traits::identities::Zero + Send + Sync> EmBuilderTwo<T> {
         self
     }
 
-    pub fn next_builder(&mut self) -> Result<EmBuilderLast<T>, BuildError<&mut Self>> {
+    /// Finish current builder changes and return the next builder.
+    ///
+    /// # Errors
+    ///
+    /// If likelihoods_arr does not have FieldStatus Complete, then BuildError will be returned.
+    // pub fn next_builder(&mut self) -> Result<EmBuilderLast<T>, BuildError<&mut Self>> {
+    pub fn next_builder(&mut self) -> Result<EmBuilderLast<T>, BuildError<Box<&mut Self>>> {
         if let Complete(likelihoods_arr) = &self.likelihoods_arr {
             let sample_arr: Array1<T> = self.sample_arr.clone();
             Ok(EmBuilderLast {
