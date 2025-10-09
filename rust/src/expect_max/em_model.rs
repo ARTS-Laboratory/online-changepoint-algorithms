@@ -1,5 +1,5 @@
 use super::pos_int::PositiveInteger;
-use crate::expect_max::normal_params::{NormalParams, NormalParamsError};
+use super::normal_params::{NormalParams, NormalParamsError};
 use itertools::izip;
 use ndarray::{s, Array1, Array2, ArrayView2, Axis, Zip};
 use pyo3::{pyclass, pymethods};
