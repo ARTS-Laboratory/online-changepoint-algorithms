@@ -87,25 +87,6 @@ pub struct EmBuilderOne<T> {
     epochs: PositiveInteger,
 }
 
-#[derive(Debug)]
-pub struct EmBuilderTwo<T> {
-    normal: NormalParams,
-    abnormals: Vec<NormalParams>,
-    sample_arr: Array1<T>,
-    likelihoods_arr: FieldStatus<Array2<T>>,
-    epochs: PositiveInteger,
-}
-
-#[derive(Debug)]
-pub struct EmBuilderLast<T> {
-    normal: NormalParams,
-    abnormals: Vec<NormalParams>,
-    sample_arr: Array1<T>,
-    likelihoods_arr: Array2<T>,
-    converge_checker: Option<LikelihoodChecker<f64>>,
-    epochs: PositiveInteger,
-}
-
 impl EmBuilderOne<f64> {
     // #[new]
     pub fn new() -> Self {
@@ -185,6 +166,15 @@ impl EmBuilderOne<f64> {
     }
 }
 
+#[derive(Debug)]
+pub struct EmBuilderTwo<T> {
+    normal: NormalParams,
+    abnormals: Vec<NormalParams>,
+    sample_arr: Array1<T>,
+    likelihoods_arr: FieldStatus<Array2<T>>,
+    epochs: PositiveInteger,
+}
+
 impl<T: Clone + num_traits::identities::Zero + Send + Sync> EmBuilderTwo<T> {
     pub fn build_likelihoods(&mut self) -> &mut Self {
         let sample_size = self.sample_arr.len();
@@ -210,6 +200,16 @@ impl<T: Clone + num_traits::identities::Zero + Send + Sync> EmBuilderTwo<T> {
             Err(BuildError::from(MissingFieldError { my_struct: self, field: String::from("likelihoods_arr" )}))
         }
     }
+}
+
+#[derive(Debug)]
+pub struct EmBuilderLast<T> {
+    normal: NormalParams,
+    abnormals: Vec<NormalParams>,
+    sample_arr: Array1<T>,
+    likelihoods_arr: Array2<T>,
+    converge_checker: Option<LikelihoodChecker<f64>>,
+    epochs: PositiveInteger,
 }
 
 impl EmBuilderLast<f64> {
