@@ -15,11 +15,11 @@ pub enum EmModelError {
 #[pyclass]
 #[derive(Clone)]
 pub struct EmModel {
-    normal: NormalParams,
-    abnormals: Vec<NormalParams>,
-    samples: Array1<f64>,
-    likelihoods: Array2<f64>,
-    epochs: PositiveInteger,
+    pub(super) normal: NormalParams,
+    pub(super) abnormals: Vec<NormalParams>,
+    pub(super) samples: Array1<f64>,
+    pub(super) likelihoods: Array2<f64>,
+    pub(super) epochs: PositiveInteger,
 }
 
 #[pymethods]
