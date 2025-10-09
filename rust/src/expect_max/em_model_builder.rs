@@ -244,7 +244,9 @@ impl EmBuilderLast<f64> {
 
     pub fn get_standard_model(&self) -> EmModel {
         let samples = self.sample_arr.clone();
-        EmModel::new(self.normal, self.abnormals.clone(), samples, self.epochs)
+        let abnormals = self.abnormals.clone();
+        let likelihoods = self.likelihoods_arr.clone();
+        EmModel { normal: self.normal, abnormals, samples, likelihoods, epochs: self.epochs}
     }
 
     pub fn get_early_stop_model(&self) -> EarlyStopEmModel<LikelihoodChecker<f64>> {
