@@ -4,6 +4,7 @@ use itertools::izip;
 use ndarray::{s, Array1, Array2, ArrayView2, Axis, Zip};
 use pyo3::{pyclass, pymethods};
 use std::iter::zip;
+use super::em_model_builder::EmBuilderOne;
 
 #[derive(Debug)]
 pub enum EmModelError {
@@ -123,6 +124,10 @@ impl EmModel {
             likelihoods,
             epochs,
         }
+    }
+
+    pub fn builder() -> EmBuilderOne<f64> {
+        EmBuilderOne::new()
     }
 
     pub fn epochs(&self) -> PositiveInteger {
