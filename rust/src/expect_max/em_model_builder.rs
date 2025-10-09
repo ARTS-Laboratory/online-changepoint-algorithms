@@ -179,6 +179,12 @@ impl EmBuilderOne<f64> {
     }
 }
 
+impl Default for EmBuilderOne<f64> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Debug)]
 pub struct EmBuilderTwo<T> {
     normal: NormalParams,
