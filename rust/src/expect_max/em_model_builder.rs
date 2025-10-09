@@ -79,92 +79,92 @@ impl<T> From<MissingFieldError<T>> for PyErr {
     }
 }
 
-// #[pyclass]
-pub struct EmBuilder {
-    normal: NormalParams,
-    abnormals: Vec<NormalParams>,
-    sample_arr: Option<Array1<f64>>,
-    // likelihoods_arr: Option<Array2<f64>>,
-    epochs: PositiveInteger,
-}
-
-// todo make constrained members of classes.
-// #[pymethods]
-impl EmBuilder {
-    // #[new]
-    pub fn new() -> Self {
-        let normal = NormalParams::new(
-            Normal::new(0.0, 1.0).expect("The default values used should never fail"),
-            1.0,
-        )
-        .expect("The default parameters should never fail");
-        let abnormals: Vec<NormalParams> = Vec::new();
-        let epochs: u32 = 1;
-        Self {
-            normal,
-            abnormals,
-            sample_arr: None,
-            // likelihoods_arr: None,
-            epochs: PositiveInteger::new(epochs).expect("The default value used should never fail"),
-        }
-    }
-
-    pub fn build_normal(
-        &mut self,
-        mean: f64,
-        stddev: f64,
-        prob: f64,
-    ) -> Result<&mut EmBuilder, NormalParamsError> {
-        self.normal.update_params(mean, stddev, prob)?;
-        Ok(self)
-    }
-
-    pub fn build_abnormal(
-        &mut self,
-        abnormals: &[NormalParams],
-    ) -> Result<&mut EmBuilder, InvalidFloatError> {
-        abnormals.clone_into(&mut self.abnormals);
-        Ok(self)
-    }
-
-    pub fn build_abnormal_from_tuples(
-        &mut self,
-        abnormals: &[(f64, f64, f64)],
-    ) -> Result<&mut EmBuilder, NormalParamsError> {
-        for &(mean, stddev, prob) in abnormals {
-            let dist = Normal::new(mean, stddev)?;
-            let params = NormalParams::new(dist, prob)?;
-            self.abnormals.push(params);
-        }
-        Ok(self)
-    }
-
-    pub fn build_epochs(&mut self, epochs: u32) -> Result<&mut EmBuilder, PositiveError> {
-        self.epochs.set(epochs)?;
-        Ok(self)
-    }
-
-    pub fn build_samples_from_slice(&mut self, samples: &[f64]) -> &mut EmBuilder {
-        let mut sample_arr = Array1::zeros(samples.len() + 1);
-        for (out, &sample) in zip(&mut sample_arr, samples) {
-            *out = sample;
-        }
-        debug_assert_eq!(samples.len() + 1, sample_arr.len());
-        self.sample_arr = Some(sample_arr);
-        self
-    }
-}
-
-// todo deprecate this
-impl EmBuilder {
-    pub fn get_model(&self) -> EmModel {
-        let Some(build_samples) = &self.sample_arr else {
-            panic!("Sample array not initialized");
-        };
-        let samples = build_samples.clone();
-        EmModel::new(self.normal, self.abnormals.clone(), samples, self.epochs)
-    }
-}
+// // #[pyclass]
+// pub struct EmBuilder {
+//     normal: NormalParams,
+//     abnormals: Vec<NormalParams>,
+//     sample_arr: Option<Array1<f64>>,
+//     // likelihoods_arr: Option<Array2<f64>>,
+//     epochs: PositiveInteger,
+// }
+//
+// // todo make constrained members of classes.
+// // #[pymethods]
+// impl EmBuilder {
+//     // #[new]
+//     pub fn new() -> Self {
+//         let normal = NormalParams::new(
+//             Normal::new(0.0, 1.0).expect("The default values used should never fail"),
+//             1.0,
+//         )
+//         .expect("The default parameters should never fail");
+//         let abnormals: Vec<NormalParams> = Vec::new();
+//         let epochs: u32 = 1;
+//         Self {
+//             normal,
+//             abnormals,
+//             sample_arr: None,
+//             // likelihoods_arr: None,
+//             epochs: PositiveInteger::new(epochs).expect("The default value used should never fail"),
+//         }
+//     }
+//
+//     pub fn build_normal(
+//         &mut self,
+//         mean: f64,
+//         stddev: f64,
+//         prob: f64,
+//     ) -> Result<&mut EmBuilder, NormalParamsError> {
+//         self.normal.update_params(mean, stddev, prob)?;
+//         Ok(self)
+//     }
+//
+//     pub fn build_abnormal(
+//         &mut self,
+//         abnormals: &[NormalParams],
+//     ) -> Result<&mut EmBuilder, InvalidFloatError> {
+//         abnormals.clone_into(&mut self.abnormals);
+//         Ok(self)
+//     }
+//
+//     pub fn build_abnormal_from_tuples(
+//         &mut self,
+//         abnormals: &[(f64, f64, f64)],
+//     ) -> Result<&mut EmBuilder, NormalParamsError> {
+//         for &(mean, stddev, prob) in abnormals {
+//             let dist = Normal::new(mean, stddev)?;
+//             let params = NormalParams::new(dist, prob)?;
+//             self.abnormals.push(params);
+//         }
+//         Ok(self)
+//     }
+//
+//     pub fn build_epochs(&mut self, epochs: u32) -> Result<&mut EmBuilder, PositiveError> {
+//         self.epochs.set(epochs)?;
+//         Ok(self)
+//     }
+//
+//     pub fn build_samples_from_slice(&mut self, samples: &[f64]) -> &mut EmBuilder {
+//         let mut sample_arr = Array1::zeros(samples.len() + 1);
+//         for (out, &sample) in zip(&mut sample_arr, samples) {
+//             *out = sample;
+//         }
+//         debug_assert_eq!(samples.len() + 1, sample_arr.len());
+//         self.sample_arr = Some(sample_arr);
+//         self
+//     }
+// }
+//
+// // todo deprecate this
+// impl EmBuilder {
+//     pub fn get_model(&self) -> EmModel {
+//         let Some(build_samples) = &self.sample_arr else {
+//             panic!("Sample array not initialized");
+//         };
+//         let samples = build_samples.clone();
+//         EmModel::new(self.normal, self.abnormals.clone(), samples, self.epochs)
+//     }
+// }
 
 #[derive(Debug)]
 pub struct EmBuilderOne<T> {
