@@ -21,7 +21,7 @@ impl From<ProbabilityError> for PyErr {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Probability {
     probability: f64,
 }

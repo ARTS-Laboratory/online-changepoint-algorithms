@@ -68,7 +68,7 @@ impl fmt::Display for NormalError {
 //     }
 // }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Normal {
     mean: f64,
     stddev: f64,
