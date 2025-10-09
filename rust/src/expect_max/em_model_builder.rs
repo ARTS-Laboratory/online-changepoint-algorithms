@@ -111,8 +111,7 @@ impl EmBuilderOne<f64> {
         mean: f64,
         stddev: f64,
         prob: f64,
-    ) -> Result<&mut Self, BuildError<Self>> {
-        // self.normal.update_params(mean, stddev, prob)?;
+    ) -> Result<&mut Self, BuildError<()>> {
         self.normal.update_params(mean, stddev, prob)?;
         Ok(self)
     }
@@ -160,7 +159,6 @@ impl EmBuilderOne<f64> {
     /// # Errors
     ///
     /// If sample_arr does not have FieldStatus Complete, then BuildError will be returned.
-    // pub fn next_builder(&mut self) -> Result<EmBuilderTwo<f64>, BuildError<&mut Self>> {
     pub fn next_builder(&mut self) -> Result<EmBuilderTwo<f64>, BuildError<Box<&mut Self>>> {
         if let Complete(sample_arr) = &self.sample_arr {
             let abnormals = self.abnormals.clone();
@@ -173,8 +171,7 @@ impl EmBuilderOne<f64> {
                 epochs: self.epochs,
             })
         } else {
-            // Err(BuildError::IncompleteBuildError(self.sample_arr))
-            Err(BuildError::from(MissingFieldError { my_struct: self, field: String::from("sample_arr") }))
+            Err(BuildError::from(MissingFieldError { my_struct: Box::new(self), field: String::from("sample_arr") }))
         }
     }
 }
@@ -210,7 +207,6 @@ impl<T: Clone + num_traits::identities::Zero + Send + Sync> EmBuilderTwo<T> {
     /// # Errors
     ///
     /// If likelihoods_arr does not have FieldStatus Complete, then BuildError will be returned.
-    // pub fn next_builder(&mut self) -> Result<EmBuilderLast<T>, BuildError<&mut Self>> {
     pub fn next_builder(&mut self) -> Result<EmBuilderLast<T>, BuildError<Box<&mut Self>>> {
         if let Complete(likelihoods_arr) = &self.likelihoods_arr {
             let sample_arr: Array1<T> = self.sample_arr.clone();
@@ -223,8 +219,7 @@ impl<T: Clone + num_traits::identities::Zero + Send + Sync> EmBuilderTwo<T> {
                 converge_checker: None,
             })
         } else {
-            // Err(BuildError::IncompleteBuildError(self))
-            Err(BuildError::from(MissingFieldError { my_struct: self, field: String::from("likelihoods_arr" )}))
+            Err(BuildError::from(MissingFieldError { my_struct: Box::new(self), field: String::from("likelihoods_arr" )}))
         }
     }
 }
