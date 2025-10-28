@@ -133,7 +133,7 @@ impl BocpdModel {
     fn update_params(&mut self, point: f64) {
         let (max_idx, _max_val) = self.probs.max_prob();
         self.prev_max = self.curr_max;
-        self.curr_max = max_idx as usize;
+        self.curr_max = max_idx;
         let NormalInverseGamma {
             alpha,
             beta,
