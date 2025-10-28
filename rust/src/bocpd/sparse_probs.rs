@@ -14,6 +14,7 @@ pub struct SparseProb {
 
 #[pymethods]
 impl SparseProb {
+
     #[new]
     fn new_py(run_length: i64, value: f64) -> PyResult<Self> {
         match run_length {
@@ -47,6 +48,15 @@ impl SparseProb {
     fn increment(&mut self) -> usize {
         self.pos += 1;
         self.pos
+    }
+}
+
+impl SparseProb {
+    pub fn new(run_length: usize, value: f64) -> Self {
+        Self {
+            pos: run_length,
+            value,
+        }
     }
 }
 
