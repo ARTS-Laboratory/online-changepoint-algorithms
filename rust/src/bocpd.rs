@@ -3,28 +3,12 @@ pub mod bocpd_model;
 pub mod dist_params;
 mod element;
 pub mod sparse_probs;
+mod normal_inverse_gamma;
 
 use statrs::function::beta::beta;
 use std::collections::{HashMap, VecDeque};
 use std::iter::zip;
-
-pub struct NormalInverseGamma {
-    pub alpha: f64,
-    pub beta: f64,
-    pub mu: f64,
-    pub kappa: f64,
-}
-
-impl Default for NormalInverseGamma {
-    fn default() -> Self {
-        Self {
-            alpha: 1.0,
-            beta: 1.0,
-            mu: 0.0,
-            kappa: 1.0,
-        }
-    }
-}
+use normal_inverse_gamma::NormalInverseGamma;
 
 pub fn bocpd<T: element::Element>(
     data: impl IntoIterator<Item = T> + ExactSizeIterator,
