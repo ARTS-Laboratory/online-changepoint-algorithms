@@ -1,5 +1,5 @@
 use super::beta_cache::BetaCache;
-use crate::bocpd::NormalInverseGamma;
+use crate::bocpd::normal_inverse_gamma::NormalInverseGamma;
 use pyo3::{pyclass, pymethods, PyResult};
 use statrs::function::beta::beta;
 use std::collections::VecDeque;

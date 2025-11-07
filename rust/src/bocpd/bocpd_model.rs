@@ -1,7 +1,7 @@
 use super::beta_cache::BetaCache;
 use super::dist_params::DistParams;
 use super::sparse_probs::SparseProbs;
-use crate::bocpd::NormalInverseGamma;
+use crate::bocpd::normal_inverse_gamma::NormalInverseGamma;
 use pyo3::{pyclass, pymethods, PyResult};
 use std::iter::zip;
 
