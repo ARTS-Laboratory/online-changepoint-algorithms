@@ -7,18 +7,19 @@ use std::ops::{Deref, DerefMut};
 #[pyclass]
 pub struct SparseProb {
     #[pyo3(get)]
-    pos: i64,
+    pos: usize,
     #[pyo3(get, set)]
     value: f64,
 }
 
 #[pymethods]
 impl SparseProb {
+
     #[new]
     fn new_py(run_length: i64, value: f64) -> PyResult<Self> {
         match run_length {
             0.. => Ok(Self {
-                pos: run_length,
+                pos: run_length as usize,
                 value,
             }),
             ..0 => Err(PyValueError::new_err("run length must be nonnegative")),
@@ -35,18 +36,27 @@ impl SparseProb {
     }
 
     #[setter]
-    fn set_pos(&mut self, pos: i64) -> PyResult<()> {
-        if !self.pos.is_negative() {
-            self.pos = pos;
+    fn set_pos(&mut self, pos: isize) -> PyResult<()> {
+        if !pos.is_negative() {
+            self.pos = pos as usize;
             Ok(())
         } else {
             Err(PyValueError::new_err("run length must be nonnegative"))
         }
     }
 
-    fn increment(&mut self) -> i64 {
+    fn increment(&mut self) -> usize {
         self.pos += 1;
         self.pos
+    }
+}
+
+impl SparseProb {
+    pub fn new(run_length: usize, value: f64) -> Self {
+        Self {
+            pos: run_length,
+            value,
+        }
     }
 }
 
@@ -80,10 +90,9 @@ impl SparseProbs {
     }
 
     pub fn new_entry(&mut self, run_length: i64, value: f64) -> PyResult<()> {
-        // todo make setter method that does the check.
-        SparseProb::new_py(run_length, value).and_then(|item| {
+        SparseProb::new_py(run_length, value).map(|item| {
             self.probs.push_front(item);
-            Ok(())
+            ()
         })
     }
 
@@ -100,10 +109,10 @@ impl SparseProbs {
         self.new_entry(0, head)
     }
 
-    pub fn max_prob(&self) -> (i64, f64) {
+    pub fn max_prob(&self) -> (usize, f64) {
         let mut max_value = -f64::INFINITY;
         let mut max_idx = 0;
-        for prob in self.probs.iter() {
+        for prob in &self.probs {
             if prob.value > max_value {
                 max_value = prob.value;
                 max_idx = prob.pos;
