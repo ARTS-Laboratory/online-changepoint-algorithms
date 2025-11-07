@@ -409,7 +409,7 @@ mod tests {
 
     #[test]
     fn test_get_standard_model() {
-        let mut em = make_em_builder_last();
+        let em = make_em_builder_last();
         let standard_model = em.get_standard_model();
         assert_eq!(standard_model.normal, em.normal);
         assert_eq!(standard_model.abnormals, em.abnormals);
@@ -435,7 +435,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Converge checker not initialized")]
     fn test_get_early_stop_model_panics_without_converge_checker() {
-        let mut em = make_em_builder_last();
+        let em = make_em_builder_last();
         em.get_early_stop_model();
     }
 }
