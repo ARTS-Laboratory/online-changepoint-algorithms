@@ -1,9 +1,10 @@
 use super::pos_int::PositiveInteger;
-use crate::expect_max::normal_params::{NormalParams, NormalParamsError};
+use super::normal_params::{NormalParams, NormalParamsError};
 use itertools::izip;
 use ndarray::{s, Array1, Array2, ArrayView2, Axis, Zip};
 use pyo3::{pyclass, pymethods};
 use std::iter::zip;
+use super::em_model_builder::EmBuilderOne;
 
 #[derive(Debug)]
 pub enum EmModelError {
@@ -15,11 +16,11 @@ pub enum EmModelError {
 #[pyclass]
 #[derive(Clone)]
 pub struct EmModel {
-    normal: NormalParams,
-    abnormals: Vec<NormalParams>,
-    samples: Array1<f64>,
-    likelihoods: Array2<f64>,
-    epochs: PositiveInteger,
+    pub(super) normal: NormalParams,
+    pub(super) abnormals: Vec<NormalParams>,
+    pub(super) samples: Array1<f64>,
+    pub(super) likelihoods: Array2<f64>,
+    pub(super) epochs: PositiveInteger,
 }
 
 #[pymethods]
@@ -46,13 +47,13 @@ impl EmModel {
             .probs_inplace_arr(&sample_view, &mut normal_view);
         let mut abnormals = self.likelihoods.slice_mut(s![1.., ..]);
         let abnormals_view = abnormals.rows_mut();
-        for (mut likelihood, abnormal) in zip(abnormals_view, self.abnormals.iter()) {
+        for (mut likelihood, abnormal) in zip(abnormals_view, &self.abnormals) {
             abnormal.probs_inplace_arr(&sample_view, &mut likelihood);
         }
         // normalize
         let norms = self.likelihoods.sum_axis(Axis(0));
         let likelihood_view = self.likelihoods.columns_mut();
-        for (mut likelihood, &norm) in zip(likelihood_view, norms.iter()) {
+        for (mut likelihood, &norm) in zip(likelihood_view, &norms) {
             if norm != 0.0 {
                 likelihood /= norm;
             }
@@ -116,7 +117,6 @@ impl EmModel {
         let sample_size = samples.len();
         let num_params = abnormals.len() + 1;
         let likelihoods = Array2::<f64>::zeros((num_params, sample_size));
-        // let last_likelihoods = Array2::from(&likelihoods);
         Self {
             normal,
             abnormals,
@@ -124,6 +124,10 @@ impl EmModel {
             likelihoods,
             epochs,
         }
+    }
+
+    pub fn builder() -> EmBuilderOne<f64> {
+        EmBuilderOne::new()
     }
 
     pub fn epochs(&self) -> PositiveInteger {
@@ -138,6 +142,7 @@ impl EmModel {
         self.likelihoods.view()
     }
 
+    /// Return mean estimates for normal and abnormal distributions
     fn update_means(&self, densities: &Array1<f64>) -> Array1<f64> {
         let sample_view = self.samples.view();
         // let means = (self.likelihoods * densities).sum_axis(Axis(1));
@@ -148,6 +153,7 @@ impl EmModel {
         means
     }
 
+    /// Return variance value estimates for normal and abnormal distributions
     fn update_variances(&self, densities: &Array1<f64>, means: &Array1<f64>) -> Array1<f64> {
         let sample_view = self.samples.view();
         let means_view = means.view();
@@ -161,7 +167,73 @@ impl EmModel {
         variances
     }
 
+    /// Return an updated estimate of probabilities for normal and abnormal distributions
     fn update_weights(&self, densities: &Array1<f64>, size: usize) -> Array1<f64> {
         densities / (size as f64)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::expect_max::em_model_builder::EmBuilderOne;
+    use super::*;
+    
+    #[test]
+    fn test_build_model() {
+        let abnormals = vec![NormalParams::from_tuple((30.0, 1.0, 0.25)).unwrap()];
+        let samples = vec![-1.0, 0.0, 1.0, 30.0, 29.0, 31.0];
+        let mut model_one = EmBuilderOne::new();
+        let em_model = model_one
+            .build_normal(0.0, 1.0, 0.5).unwrap()
+            .build_abnormal(&abnormals)
+            .build_samples_from_slice(&samples)
+            .next_builder().unwrap()
+            .build_likelihoods()
+            .next_builder().unwrap()
+            .get_standard_model();
+        assert_eq!(em_model.epochs, PositiveInteger::new(1).unwrap());
+    }
+    
+    fn make_standard_model() -> EmModel {
+        let abnormals = vec![NormalParams::from_tuple((30.0, 1.0, 0.25)).unwrap()];
+        let samples = vec![-1.0, 0.0, 1.0, 30.0, 29.0, 31.0];
+        let mut model_one = EmBuilderOne::new();
+        model_one
+            .build_normal(0.0, 1.0, 0.5).unwrap()
+            .build_abnormal(&abnormals)
+            .build_samples_from_slice(&samples)
+            .next_builder().unwrap()
+            .build_likelihoods()
+            .next_builder().unwrap()
+            .get_standard_model()
+    }
+
+    #[test]
+    fn test_swap_last_sample() {
+        let mut model = make_standard_model();
+        let last = model.swap_last_sample(42.0);
+        assert_eq!(last, 0.0);
+        assert_eq!(model.samples.last(), Some(&42.0));
+    }
+
+    #[test]
+    #[should_panic( expected = "samples is empty")]
+    fn test_swap_last_sample_empty() {
+        let normal = NormalParams::from_tuple((0.0, 1.0, 0.5)).unwrap();
+        let abnormals = vec![NormalParams::from_tuple((30.0, 1.0, 0.25)).unwrap()];
+        let samples = Array1::<f64>::zeros(0);
+        let epochs = PositiveInteger::new(2).unwrap();
+        let mut model = EmModel::new(normal, abnormals, samples, epochs);
+        let _res = model.swap_last_sample(-14.0);
+    }
+
+    #[test]
+    fn test_update() {
+        let mut model = make_standard_model();
+        let old_likelihoods = model.likelihoods.clone();
+        model.update(0.0).unwrap();
+        assert_ne!(old_likelihoods, model.likelihoods);
+
+    }
+
 }

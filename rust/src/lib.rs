@@ -6,7 +6,6 @@ use bocpd::bocpd_model::BocpdModel;
 use cusum::{CusumV0, CusumV1};
 use expect_max::em_early_stop_model::EmLikelihoodCheck;
 use expect_max::em_model::EmModel;
-// use expect_max::em_model_builder::EmBuilder;
 use expect_max::em_model_builder::EmBuilderOne;
 
 use pyo3::prelude::*;
@@ -94,13 +93,6 @@ fn build_em_model(
         })
         .flatten()
         .collect();
-    // let mut em_builder = EmBuilder::new();
-    // em_builder
-    //     .build_normal(mean, stddev, prob)?
-    //     .build_abnormal_from_tuples(&abnormals)?
-    //     .build_epochs(epochs)?
-    //     .build_samples_from_slice(&samples);
-    // Ok(em_builder.get_model())
     let mut em_builder = EmBuilderOne::new();
     let final_builder = em_builder.build_normal(mean, stddev, prob)?
         .build_abnormal_from_tuples(&abnormals)?

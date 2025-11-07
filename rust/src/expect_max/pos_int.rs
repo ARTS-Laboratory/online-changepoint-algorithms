@@ -18,7 +18,7 @@ impl From<PositiveError> for PyErr {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct PositiveInteger(u32);
 
 impl PositiveInteger {

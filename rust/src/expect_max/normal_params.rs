@@ -38,7 +38,7 @@ impl From<NormalParamsError> for PyErr {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct NormalParams {
     dist: Normal,
     prob: Probability,
