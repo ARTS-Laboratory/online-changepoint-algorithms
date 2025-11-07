@@ -92,7 +92,6 @@ impl SparseProbs {
     pub fn new_entry(&mut self, run_length: i64, value: f64) -> PyResult<()> {
         SparseProb::new_py(run_length, value).map(|item| {
             self.probs.push_front(item);
-            ()
         })
     }
 
