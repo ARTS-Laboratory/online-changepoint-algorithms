@@ -17,6 +17,7 @@ pub fn bocpd<T: element::Element>(
     alpha: f64,
     beta: f64,
     lamb: f64,
+    use_cache: bool,
 ) -> Vec<f64> {
     let threshold = 1e-16;
     let mut out: Vec<f64> = Vec::with_capacity(data.len());
@@ -31,7 +32,7 @@ pub fn bocpd<T: element::Element>(
     };
     let mut prev_max;
     let mut curr_max = -1;
-    let mut cache: HashMap<(u64, u64), f64> = HashMap::new();
+    let mut cache: Option<HashMap<(u64, u64), f64>> = if use_cache {Some(HashMap::new())} else { None };
     // push values
     run_lengths.push_back(0);
     probabilities.push_back(1.0);
@@ -39,15 +40,27 @@ pub fn bocpd<T: element::Element>(
     for event in data {
         let event = event.get_data();
         // calculate priors
+        match &mut cache {
+            Some(cache) => {
+                calculate_probabilities_cached(
+                event,
+                lamb,
+                &parameters,
+                &mut run_lengths,
+                &mut probabilities,
+                cache,
+            );},
+            None => {calculate_probabilities(event, lamb, &parameters, &mut run_lengths, &mut probabilities)}
+        }
         // calculate_probabilities(event, lamb, &mut parameters, &mut run_lengths, &mut probabilities);
-        calculate_probabilities_2(
-            event,
-            lamb,
-            &mut parameters,
-            &mut run_lengths,
-            &mut probabilities,
-            &mut cache,
-        );
+        // calculate_probabilities_2(
+        //     event,
+        //     lamb,
+        //     &mut parameters,
+        //     &mut run_lengths,
+        //     &mut probabilities,
+        //     &mut cache,
+        // );
         // truncate vectors
         truncate_vectors(
             threshold,
@@ -80,7 +93,12 @@ pub fn bocpd<T: element::Element>(
         } else {
             update_no_attack(event, &mut parameters, alpha, beta, mu, kappa);
         }
-        let change_probs = calculate_priors_cached(event, &parameters, &mut cache);
+        let change_probs: Vec<f64> = match &mut cache {
+            Some(cache) => {
+                calculate_priors_cached(event, &parameters, cache).into_iter().collect() },
+            None => calculate_priors(event, &parameters).into_iter().collect(),
+        };
+        // let change_probs = calculate_priors_cached(event, &parameters, &mut cache);
         // let change_probs = calculate_priors(event, &parameters);
         // let mut val_prob = 0.0;
         // for (change_prob, prob) in zip(change_probs.iter(), probabilities.iter()) {
@@ -128,7 +146,7 @@ fn calculate_probabilities(
     run_lengths.push_front(0);
 }
 
-fn calculate_probabilities_2(
+fn calculate_probabilities_cached(
     point: f64,
     lamb: f64,
     parameters: &VecDeque<NormalInverseGamma>,
@@ -217,7 +235,7 @@ fn update_no_attack(
     });
 }
 
-fn calculate_priors(point: f64, parameters: &VecDeque<NormalInverseGamma>) -> Vec<f64> {
+fn calculate_priors<'a>(point: f64, parameters: &'a VecDeque<NormalInverseGamma>) -> impl IntoIterator<Item = f64> + 'a {
     // let mut out: Vec<f64> = Vec::with_capacity(parameters.len());
     // for params in parameters.iter() {
     //     let denom = 2.0 * params.beta * (params.kappa + 1.0) / params.kappa;
@@ -228,14 +246,13 @@ fn calculate_priors(point: f64, parameters: &VecDeque<NormalInverseGamma>) -> Ve
     // }
     let out = parameters
         .iter()
-        .map(|params| {
+        .map(move |params| {
             let denom = 2.0 * params.beta * (params.kappa + 1.0) / params.kappa;
             let exponent = -(params.alpha + 0.5);
             let t_value = ((point - params.mu).powi(2) / denom + 1.0).powf(exponent);
             t_value / (denom.sqrt() * beta(0.5, params.alpha))
-        })
-        .collect();
-    out
+        });
+    out.into_iter()
 }
 
 fn calculate_priors_cached<'a>(
