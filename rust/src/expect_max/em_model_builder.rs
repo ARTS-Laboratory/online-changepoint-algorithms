@@ -251,7 +251,7 @@ impl EmBuilderLast<f64> {
 
     pub fn get_early_stop_model(&self) -> EarlyStopEmModel<LikelihoodChecker<f64>> {
         let Some(checker) = &self.converge_checker else {
-            panic!("Converge checker not initialized");
+            panic!("Converge checker not initialized!");
         };
         let em_model = self.get_standard_model();
         let converge_checker = checker.clone();
