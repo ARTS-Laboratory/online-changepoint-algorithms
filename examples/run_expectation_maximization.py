@@ -31,13 +31,16 @@ def rusty_em_for_sequence(
 
 def make_use_em_model(
         arr, safe_mean, safe_std_dev, prob_safe, unsafe_mean, unsafe_std_dev,
-        prob_unsafe, arr_sizes, epochs, decision_cutoff=0.95):
-    """ Make Expectation Maximization model and run on array."""
+        prob_unsafe, arr_sizes, epochs, early_stop_threshold=1e-8, decision_cutoff=0.95):
+    """ Make Expectation Maximization model and run on array.
+
+        This model uses early stopping to complete update steps faster.
+    """
     normal_params = (safe_mean, safe_std_dev, prob_safe)
     abnormal_params = [(unsafe_mean, unsafe_std_dev, prob_unsafe)]
     model: EmLikelihoodCheck = build_em_early_stop_model(normal_params, abnormal_params, arr_sizes, epochs)
     for observation in arr:
-        model.update(observation)
+        model.update_check_convergence(observation, early_stop_threshold)
         prediction = model.predict(observation)
         abnormal = prediction < decision_cutoff
         print(f"Observation is {'normal' if (not abnormal) else 'abnormal'}")
