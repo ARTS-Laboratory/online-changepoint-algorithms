@@ -107,4 +107,30 @@ mod tests {
         let x = PositiveInteger::new(0);
         assert!(x.is_err());
     }
+
+    // Positive Integer 2
+
+    #[test]
+    fn test_positive_integer2_constructor() {
+        let x = PositiveInteger2::new(10);
+        assert!(x.is_ok());
+        assert_eq!(x.unwrap().value(), 10);
+    }
+
+    #[test]
+    fn test_positive_integer2_new_fail() {
+        let x = PositiveInteger2::new(0);
+        assert!(x.is_err());
+    }
+
+    #[test]
+    fn test_positive_integer2_set_value() {
+        let x = PositiveInteger2::new(10);
+        assert!(x.is_ok());
+        let mut pos_int = x.unwrap();
+        assert_eq!(pos_int.value(), 10);
+        let res = pos_int.set(2);
+        assert!(res.is_ok());
+        assert_eq!(pos_int.value(), 2);
+    }
 }
