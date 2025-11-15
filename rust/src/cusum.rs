@@ -206,6 +206,14 @@ mod tests {
         assert_eq!(lt.prev, 24.0);
         assert_eq!(lt.curr, 77.42);
     }
+    
+    #[test]
+    fn test_last_two_set_prev() {
+        let mut lt = LastTwo::default();
+        assert_eq!(lt.prev, 0.0);
+        lt.set_prev(24.0);
+        assert_eq!(lt.prev, 24.0);
+    }
 
     // Test CusumV0
     #[test]
