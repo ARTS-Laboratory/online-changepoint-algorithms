@@ -26,3 +26,10 @@ rand_distr = "0.5.1"
 name = "benchmark_bocpd"
 harness = false
 
+[[bench]]
+name = "benchmark_bocpd_model"
+harness = false
+
+[[bench]]
+name = "benchmark_cusum"
+harness = false
