@@ -49,8 +49,11 @@ impl BetaCache {
             let fixed = self.fixed_value;
             let res = match value {
                 ..0.0 => todo!("does not expect negative numbers. What should we do in this case?"), // beta(steady_x, increase_y), // technically, should throw error
-                0.0..=1.0 => beta(fixed, value),
-                1.0.. => (value / (fixed + value)) * beta(fixed, value - 1.0),
+                0.0.. => beta(fixed, value),
+                // 0.0..=1.0 => beta(fixed, value),
+                // 1.0.. => {
+                //     let q = value - 1.0;
+                //     (q / (fixed + q)) * beta(fixed, q) },
                 _ => todo!("add functionality for other float types."),
             };
             e.insert(res);
