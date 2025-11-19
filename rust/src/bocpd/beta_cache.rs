@@ -61,3 +61,42 @@ impl BetaCache {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::f64::consts::PI;
+
+    #[test]
+    fn test_constructor() {
+        let cache = BetaCache::new_py(0.5);
+        assert_eq!(cache.fixed_value, 0.5);
+    }
+
+    fn make_cache() -> BetaCache {
+        BetaCache::new_py(0.5)
+    }
+
+    #[test]
+    fn test_get_value() {
+        let mut cache = make_cache();
+        let half_key: u64 = (0.5_f64).to_bits();
+        assert!(matches!(cache.cache.get(&half_key), None));
+        let value = cache.get_value(0.5);
+        assert!((value - PI).abs() < 1e-8);
+        assert!(matches!(cache.cache.get(&half_key), Some(&x)));
+    }
+
+    #[test]
+    fn test_first_n_values() {
+        let n = 1_000;
+        let epsilon: f64 = 1e-8;
+        let mut cache = make_cache();
+        for i in 1..(2*n + 1) {
+            let half = i as f64 / 2.0;
+            let correct = beta(0.5, half);
+            let value = cache.get_value(half);
+            assert!((value - correct).abs() < epsilon, "{}th half value was incorrect. Expected {} but got {}", i, correct, value);
+        }
+    }
+}
