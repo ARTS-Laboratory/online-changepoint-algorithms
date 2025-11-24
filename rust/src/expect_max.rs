@@ -8,6 +8,7 @@ mod pos_int;
 mod probability;
 
 use std::{f64::consts::PI, iter::zip};
+use crate::expect_max::normal::Normal;
 // use crate::element::Element;
 // struct Normal {
 //     mu: f64,
@@ -21,10 +22,8 @@ pub fn expectation_maximization<'a>(
     safe: &[f64],
     not_safe: &[f64],
     unknowns: impl IntoIterator<Item = &'a f64> + ExactSizeIterator,
-    mean_1: f64,
-    mean_2: f64,
-    var_1: f64,
-    var_2: f64,
+    safe_dist: &Normal,
+    not_safe_dist: &Normal,
     pi: f64,
     epochs: i64,
 ) -> Vec<f64> {
@@ -32,10 +31,10 @@ pub fn expectation_maximization<'a>(
     let len = safe.len() + not_safe.len() + 1;
     let i_len = len as i64;
     let converge_tolerance = 1e-4;
-    let mut mu1_hat = mean_1;
-    let mut mu2_hat = mean_2;
-    let mut sig1_hat = var_1;
-    let mut sig2_hat = var_2;
+    let mut mu1_hat = safe_dist.mean();
+    let mut mu2_hat = not_safe_dist.mean();
+    let mut sig1_hat = safe_dist.stddev().powi(2);
+    let mut sig2_hat = not_safe_dist.stddev().powi(2);
     let mut pi_hat = pi;
     let mut prev_out = vec![f64::NEG_INFINITY; len];
     let mut out_1 = vec![0.0; len];
