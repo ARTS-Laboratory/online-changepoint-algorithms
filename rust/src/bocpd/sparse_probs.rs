@@ -121,6 +121,24 @@ impl SparseProbs {
     }
 }
 
+impl SparseProbs {
+
+    /// Update probabilities using priors given as slice.
+    pub fn update_probs_from_slice(&mut self, priors: &[f64], hazard: f64) -> PyResult<()> {
+        let mut head = 0.0;
+        let negative_hazard = 1.0 - hazard;
+        for (sparse_prob, prior) in zip(&mut self.probs, priors) {
+            let val = sparse_prob.value * prior;
+            head += val;
+            sparse_prob.value = val * negative_hazard;
+            sparse_prob.increment();
+        }
+        head *= hazard;
+        self.new_entry(0, head)
+    }
+
+}
+
 impl Deref for SparseProbs {
     type Target = VecDeque<SparseProb>;
 

@@ -150,3 +150,9 @@ impl BocpdModel {
         }
     }
 }
+
+impl BocpdModel {
+    pub fn params_length(&self) -> usize {
+        self.params.len()
+    }
+}

@@ -49,8 +49,11 @@ impl BetaCache {
             let fixed = self.fixed_value;
             let res = match value {
                 ..0.0 => todo!("does not expect negative numbers. What should we do in this case?"), // beta(steady_x, increase_y), // technically, should throw error
-                0.0..=1.0 => beta(fixed, value),
-                1.0.. => (value / (fixed + value)) * beta(fixed, value - 1.0),
+                0.0.. => beta(fixed, value),
+                // 0.0..=1.0 => beta(fixed, value),
+                // 1.0.. => {
+                //     let q = value - 1.0;
+                //     (q / (fixed + q)) * beta(fixed, q) },
                 _ => todo!("add functionality for other float types."),
             };
             e.insert(res);
@@ -58,6 +61,45 @@ impl BetaCache {
         } else {
             let &value = self.cache.get(&key).expect("Cache should always have key here since we checked just before.");
             value
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::f64::consts::PI;
+
+    #[test]
+    fn test_constructor() {
+        let cache = BetaCache::new_py(0.5);
+        assert_eq!(cache.fixed_value, 0.5);
+    }
+
+    fn make_cache() -> BetaCache {
+        BetaCache::new_py(0.5)
+    }
+
+    #[test]
+    fn test_get_value() {
+        let mut cache = make_cache();
+        let half_key: u64 = (0.5_f64).to_bits();
+        assert!(matches!(cache.cache.get(&half_key), None));
+        let value = cache.get_value(0.5);
+        assert!((value - PI).abs() < 1e-8);
+        assert!(matches!(cache.cache.get(&half_key), Some(&x)));
+    }
+
+    #[test]
+    fn test_first_n_values() {
+        let n = 1_000;
+        let epsilon: f64 = 1e-8;
+        let mut cache = make_cache();
+        for i in 1..(2*n + 1) {
+            let half = i as f64 / 2.0;
+            let correct = beta(0.5, half);
+            let value = cache.get_value(half);
+            assert!((value - correct).abs() < epsilon, "{}th half value was incorrect. Expected {} but got {}", i, correct, value);
         }
     }
 }

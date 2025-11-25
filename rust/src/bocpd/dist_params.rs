@@ -10,6 +10,8 @@ pub struct DistParams {
     params: VecDeque<NormalInverseGamma>,
 }
 
+const DEFAULT_FIXED_VALUE: f64 = 0.5;
+
 #[pymethods]
 impl DistParams {
     #[new]
@@ -56,9 +58,10 @@ impl DistParams {
                 let exponent = -(param.alpha + 0.5);
                 let t_value = ((value - param.mu).powi(2) / denom + 1.0).powf(exponent);
                 // try to use the cache if it matches, else just calculate normally.
+                // If cache doesn't use default fixed value, then ignore since it won't be helpful
                 let beta_value = match cache.get_fixed_value() {
-                    0.5 => cache.get_value(param.alpha),
-                    _ => beta(0.5, param.alpha),
+                    DEFAULT_FIXED_VALUE => cache.get_value(param.alpha),
+                    _ => beta(DEFAULT_FIXED_VALUE, param.alpha),
                 };
                 t_value / (denom.sqrt() * beta_value)
             })
